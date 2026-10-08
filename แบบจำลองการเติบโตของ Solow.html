@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>แบบจำลองการเติบโตของ Solow</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<style>
+:root{--bg:#f1f5f9;--card:#fff;--text:#1e293b;--muted:#64748b;--line:#e2e8f0;--brand:#312e81;--accent:#4f46e5;--soft:#eef2ff;--grid:rgba(100,116,139,.18);
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f172a;--card:#1e293b;--text:#e2e8f0;--muted:#94a3b8;--line:#334155;--brand:#1e1b4b;--accent:#818cf8;--soft:#312e81;--grid:rgba(148,163,184,.2)}}
+:root[data-theme="dark"]{--bg:#0f172a;--card:#1e293b;--text:#e2e8f0;--muted:#94a3b8;--line:#334155;--brand:#1e1b4b;--accent:#818cf8;--soft:#312e81;--grid:rgba(148,163,184,.2)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Prompt',system-ui,sans-serif;line-height:1.6}
+header{background:var(--brand);color:#fff;padding:18px 20px}
+.wrap{max-width:1150px;margin:0 auto}
+header .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center}
+h1{font-size:1.4rem;margin:0}
+header p{margin:0;font-size:.85rem;opacity:.8}
+.id{background:rgba(255,255,255,.12);padding:8px 14px;border-radius:12px;font-size:.88rem}
+.id b{color:#fcd34d}
+main{max-width:1150px;margin:20px auto;padding:0 14px 40px;display:grid;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+h2{font-size:1.05rem;margin:0 0 8px;color:var(--accent)}
+.grid{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:900px){.grid{grid-template-columns:340px 1fr}}
+.eq{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.eq span{background:var(--soft);padding:3px 10px;border-radius:8px;font-family:Georgia,serif;font-style:italic}
+.expl{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:10px}
+.expl div{border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:.88rem}
+.up{color:#059669;font-weight:600}.down{color:#e11d48;font-weight:600}
+.row{display:flex;justify-content:space-between;font-size:.9rem;margin:14px 0 4px}
+.row b{background:var(--soft);padding:1px 8px;border-radius:6px}
+input[type=range]{width:100%;accent-color:#4f46e5}
+button{width:100%;border:0;border-radius:12px;padding:10px;font:inherit;font-size:.9rem;cursor:pointer;margin-top:8px}
+.ai{background:linear-gradient(90deg,#059669,#0d9488);color:#fff}
+.rs{background:var(--soft);color:var(--text)}
+.res div{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line);font-size:.92rem}
+.res div:last-child{border:0}
+.res b{color:var(--accent);font-size:1.02rem}
+.chartbox{position:relative;height:430px}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th,td{text-align:right;padding:6px 8px;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+.scroll{overflow-x:auto}
+.small{font-size:.8rem;color:var(--muted)}
+.ok{color:#059669;font-weight:600}.bad{color:#e11d48;font-weight:600}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+ <div><h1>แบบจำลองการเติบโตของ Solow</h1><p>Solow Growth Model</p></div>
+ <div class="id">ชื่อ-นามสกุล: <b>ชื่นกมล ไทรสลุง</b><br>รหัสนักศึกษา: <b>671610105</b></div>
+</div></header>
+
+<main>
+<section class="card">
+ <h2>คำอธิบายแบบจำลอง</h2>
+ <p style="margin:0">แบบจำลอง Solow ในรูปทั่วไปคือ <i>Y = f(K, eL, A)</i> โดย <i>Y</i> = ผลผลิต, <i>K</i> = ทุน, <i>eL</i> = แรงงานที่มีประสิทธิภาพ, <i>A</i> = ระดับเทคโนโลยี ในวิชานี้ใช้รูปที่ง่ายที่สุด:</p>
+ <div class="eq"><span>Y = A√K</span><span>I = sY</span><span>D = δK</span><span>ΔK = sY − δK</span></div>
+ <p style="margin:0" class="small">ทุนเปลี่ยนไปเท่ากับการลงทุนใหม่ลบค่าเสื่อม ณ สภาวะคงตัว ΔK = 0 จึงได้ sA√K = δK ⇒ K* = (sA/δ)², Y* = A√K*, C* = (1−s)Y*</p>
+ <div class="expl">
+  <div><b><i>s</i> อัตราการออม</b><br>สัดส่วนของ Y ที่นำไปลงทุน <span class="up">s เพิ่ม → เส้นลงทุน sY ยกสูงขึ้น → K เพิ่ม</span></div>
+  <div><b><i>δ</i> อัตราค่าเสื่อม</b><br>สัดส่วนของทุนที่สึกหรอในแต่ละงวด <span class="down">δ เพิ่ม → เส้นค่าเสื่อม δK ชันขึ้น → K ลด</span></div>
+  <div><b><i>A</i> เทคโนโลยี</b><br>ทำให้ทุนแต่ละหน่วยสร้างผลผลิตได้มากขึ้น <span class="up">A เพิ่ม → Y และ sY สูงขึ้น → K เพิ่ม</span></div>
+ </div>
+ <p class="small" style="margin:10px 0 0">ค่าตั้งต้นจากรหัส 671610105: หลักสุดท้าย = 5, หลักรองสุดท้าย = 0 → s = 0.20 + 5×0.02 = 0.300, δ = 0.02 + 0×0.002 = 0.020, A = 2.6</p>
+</section>
+
+<div class="grid">
+ <section class="card">
+  <h2>กำหนดค่าตัวแปร</h2>
+  <div class="row"><span>อัตราการออม (s)</span><b id="sVal"></b></div>
+  <input type="range" id="s" min="0.1" max="0.9" step="0.01" value="0.3">
+  <div class="row"><span>อัตราค่าเสื่อม (δ)</span><b id="dVal"></b></div>
+  <input type="range" id="d" min="0.005" max="0.1" step="0.001" value="0.02">
+  <div class="row"><span>เทคโนโลยี (A)</span><b id="aVal"></b></div>
+  <input type="range" id="a" min="1" max="6" step="0.01" value="2.6">
+  <button class="ai" id="aiBtn">จำลอง: ประเทศไทยนำ AI มาใช้ (A เพิ่ม 20%)</button>
+  <button class="rs" id="rsBtn">คืนค่าตั้งต้น (รหัส 671610105)</button>
+  <h2 style="margin-top:18px">ผลลัพธ์ที่สภาวะคงตัว</h2>
+  <div class="res">
+   <div><span>ทุน K*</span><b id="kS"></b></div>
+   <div><span>ผลผลิต Y*</span><b id="yS"></b></div>
+   <div><span>การบริโภค C*</span><b id="cS"></b></div>
+  </div>
+ </section>
+ <section class="card">
+  <h2>กราฟสภาวะคงตัว</h2>
+  <p class="small" style="margin:0 0 6px">แกนนอน = ทุน K | เส้นผลผลิต Y, เส้นการลงทุน sY, เส้นค่าเสื่อม δK</p>
+  <div class="chartbox"><canvas id="ch"></canvas></div>
+ </section>
+</div>
+
+<section class="card" id="aiBox" hidden>
+ <h2>สถานการณ์เศรษฐกิจดิจิทัล: ไทยนำ AI มาใช้ (A × 1.2)</h2>
+ <div class="scroll"><table>
+  <thead><tr><th>ตัวแปร</th><th>ก่อนใช้ AI</th><th>หลังใช้ AI</th><th>เปลี่ยนไป</th><th>%</th></tr></thead>
+  <tbody id="aiBody"></tbody>
+ </table></div>
+ <p class="small" style="margin:8px 0 0">เส้นประในกราฟคือเส้นเดิมก่อนใช้ AI เนื่องจาก K* ∝ A² การเพิ่ม A 20% จึงทำให้ K* เพิ่ม 1.2² − 1 = 44% ส่วน Y* และ C* ก็เพิ่ม 44% เช่นกัน</p>
+</section>
+
+<section class="card">
+ <h2>ตรวจสอบความถูกต้อง (Self-check)</h2>
+ <p class="small" style="margin:0 0 8px">เทียบสูตรปิด K* = (sA/δ)² กับค่าที่หาด้วยวิธีเชิงตัวเลข (bisection) จากสมการ sA√K = δK, และตรวจว่า sY* = δK* และ C* + sY* = Y*</p>
+ <div class="scroll"><table><tbody id="chk"></tbody></table></div>
+</section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const DEF={s:0.3,d:0.02,a:2.6};
+let chart=null, base=null;
+const f3=x=>x.toLocaleString('en-US',{minimumFractionDigits:3,maximumFractionDigits:3});
+function solve(s,d,A){const K=Math.pow(s*A/d,2),Y=A*Math.sqrt(K);return{K,Y,C:(1-s)*Y}}
+function bisect(s,d,A){let lo=1e-9,hi=1e7;for(let i=0;i<200;i++){const m=(lo+hi)/2;if(s*A*Math.sqrt(m)-d*m>0)lo=m;else hi=m}return(lo+hi)/2}
+function vals(){return{s:+$('s').value,d:+$('d').value,a:+$('a').value}}
+function colors(){const c=getComputedStyle(document.body).color;return c}
+function render(){
+ const{s,d,a}=vals();
+ $('sVal').textContent=s.toFixed(3);$('dVal').textContent=d.toFixed(3);$('aVal').textContent=a.toFixed(3);
+ const r=solve(s,d,a);
+ $('kS').textContent=f3(r.K);$('yS').textContent=f3(r.Y);$('cS').textContent=f3(r.C);
+ drawChart(s,d,a,r);aiPanel(s,d,a,r);selfCheck(s,d,a,r);
+}
+function drawChart(s,d,a,r){
+ const maxK=Math.max(r.K*1.6,base?solve(base.s,base.d,base.a).K*1.2:0,500),n=120,st=maxK/n;
+ const Y=[],I=[],D=[],bY=[],bI=[];
+ for(let i=0;i<=n;i++){const k=i*st;Y.push({x:k,y:a*Math.sqrt(k)});I.push({x:k,y:s*a*Math.sqrt(k)});D.push({x:k,y:d*k});
+  if(base){bY.push({x:k,y:base.a*Math.sqrt(k)});bI.push({x:k,y:base.s*base.a*Math.sqrt(k)})}}
+ const L=(label,data,color,extra)=>Object.assign({label,data,borderColor:color,backgroundColor:color,borderWidth:3,pointRadius:0,fill:false},extra||{});
+ const ds=[L('ผลผลิต Y = A√K',Y,'#d97706'),L('การลงทุน sY',I,'#4f46e5'),L('ค่าเสื่อม δK',D,'#e11d48')];
+ if(base){ds.push(L('Y เดิม',bY,'#d97706',{borderDash:[6,5],borderWidth:1.5,borderColor:'rgba(217,119,6,.55)'}));
+  ds.push(L('sY เดิม',bI,'#4f46e5',{borderDash:[6,5],borderWidth:1.5,borderColor:'rgba(79,70,229,.55)'}))}
+ ds.push({label:'สภาวะคงตัว (K*, sY*)',data:[{x:r.K,y:d*r.K}],borderColor:'#10b981',backgroundColor:'#10b981',pointRadius:8,pointHoverRadius:10,showLine:false});
+ ds.push({label:'Y* ที่ K*',data:[{x:r.K,y:r.Y}],borderColor:'#f59e0b',backgroundColor:'#f59e0b',pointStyle:'rectRot',pointRadius:7,showLine:false});
+ const tc=colors(),gc=getComputedStyle(document.documentElement).getPropertyValue('--grid');
+ if(!chart){
+  chart=new Chart($('ch').getContext('2d'),{type:'line',data:{datasets:ds},options:{responsive:true,maintainAspectRatio:false,animation:false,
+   scales:{x:{type:'linear',title:{display:true,text:'ทุน K',color:tc,font:{family:'Prompt',weight:'bold'}},ticks:{color:tc},grid:{color:gc}},
+           y:{type:'linear',min:0,title:{display:true,text:'ผลผลิต / การลงทุน / ค่าเสื่อม',color:tc,font:{family:'Prompt',weight:'bold'}},ticks:{color:tc},grid:{color:gc}}},
+   plugins:{legend:{position:'bottom',labels:{color:tc,font:{family:'Prompt'}}},
+    tooltip:{callbacks:{label:c=>c.dataset.label+': K='+c.parsed.x.toFixed(2)+', ค่า='+c.parsed.y.toFixed(2)}}}}});
+ }else{
+  const o=chart.options;o.scales.x.ticks.color=tc;o.scales.y.ticks.color=tc;o.scales.x.title.color=tc;o.scales.y.title.color=tc;
+  o.scales.x.grid.color=gc;o.scales.y.grid.color=gc;o.plugins.legend.labels.color=tc;
+  chart.data.datasets=ds;chart.update();
+ }
+}
+function aiPanel(s,d,a,r){
+ if(!base){$('aiBox').hidden=true;return}
+ const b=solve(base.s,base.d,base.a);
+ const rows=[['ระดับเทคโนโลยี A',base.a,a],['ทุน K*',b.K,r.K],['ผลผลิต Y*',b.Y,r.Y],['การบริโภค C*',b.C,r.C]];
+ $('aiBody').innerHTML=rows.map(x=>`<tr><td>${x[0]}</td><td>${f3(x[1])}</td><td>${f3(x[2])}</td><td class="up">+${f3(x[2]-x[1])}</td><td class="up">+${((x[2]/x[1]-1)*100).toFixed(2)}%</td></tr>`).join('');
+ $('aiBox').hidden=false;
+}
+function selfCheck(s,d,a,r){
+ const kb=bisect(s,d,a),yb=a*Math.sqrt(kb);
+ const t=(name,x,y)=>{const ok=Math.abs(x-y)<1e-3*Math.max(1,Math.abs(y));return `<tr><td>${name}</td><td>${f3(x)}</td><td>${f3(y)}</td><td class="${ok?'ok':'bad'}">${ok?'✓ ตรงกัน':'✗ ไม่ตรง'}</td></tr>`};
+ $('chk').innerHTML='<tr><th>รายการ</th><th>สูตร</th><th>เทียบกับ</th><th>ผล</th></tr>'
+  +t('K* (สูตร vs bisection)',r.K,kb)+t('Y* (สูตร vs bisection)',r.Y,yb)
+  +t('sY* = δK*',s*r.Y,d*r.K)+t('C* + sY* = Y*',r.C+s*r.Y,r.Y);
+}
+['s','d','a'].forEach(id=>$(id).addEventListener('input',()=>{base=null;render()}));
+$('aiBtn').onclick=()=>{
+ const v=vals();
+ if(!base)base={s:v.s,d:v.d,a:v.a};
+ const na=Math.min(base.a*1.2,6);
+ $('s').value=base.s;$('d').value=base.d;$('a').value=na.toFixed(2);
+ base.a=na/1.2;render();
+};
+$('rsBtn').onclick=()=>{base=null;$('s').value=DEF.s;$('d').value=DEF.d;$('a').value=DEF.a;render()};
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>setTimeout(render,50));
+window.addEventListener('load',render);
+</script>
+</body>
+</html>
